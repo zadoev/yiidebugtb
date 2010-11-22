@@ -42,7 +42,25 @@
  * 'runInDebug'	=> Show debug toolbar only if Yii application running in DEBUG MODE (see index.php for details)
  * 'fixedPos'	=> Makes debug toolbar sticky with browser window, not document!
  * 'collapsed'	=> Show debug toolbar minimized by default.
+ * 4. Optional step. 
+ * This step is allow to manage yii debug toolbar ouput in runtime 
+ * Add this following lines into components config 
+ * [...]
+ *	'debugToolbarManager' => array(// component which allow to turn off debug toolbar output 
+ *		'class' => 'ext.yiidebugtb.YiiDebugToolbarManager', 
+ *	), 
+ * [...]
  * 
+ * Now you can simple turn of yii debug output in contoller
+ *	[...]
+ *	public function actionAnyController()
+ *	{
+ *		if ( Yii::app()->hasComponent('debugToolbarManager') ) 
+ *			Yii::app()->debugToolbarManager->disableOutput(); // it will disable yiidebugtb output
+ *		// code
+ *	} 
+ *	[...]
+ *
  * Also there is an additional security feature you may need - 'allowedIPs' option. This option
  * holds the array of IP addresses of all machines you need to use in development cycle. So if you
  * forget to remove YII_DEBUG from bootstrap file for the production stage, your client don't see
@@ -470,6 +488,9 @@ class XWebDebugRouter extends CLogRoute
 
 		//Checking for an AJAX Requests
 		if(!($app instanceof CWebApplication) || $app->getRequest()->getIsAjaxRequest()) return;
+		//Checking if output was disabled in component
+		if ( $app->hasComponent('debugToolbarManager')   && ! $app->debugToolbarManager->outputAllowed  ) 
+			return; 
 
 		//Checking for an DEBUG mode of running app
 		if (isset($config['runInDebug']) && (!DEFINED('YII_DEBUG') || YII_DEBUG == false)) return;

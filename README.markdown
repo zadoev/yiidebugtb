@@ -29,6 +29,9 @@ main.php configuration file update:
       'application.extensions.yiidebugtb.*', //our extension
     ),
     [...]
+	'debugToolbarManager' => array(// component which allow to turn off debug toolbar output 
+		'class' => 'ext.yiidebugtb.YiiDebugToolbarManager', 
+	), 
     'log'=>array(
       'class'=>'CLogRouter',
         'routes'=>array(
@@ -54,6 +57,19 @@ main.php configuration file update:
 * ‘fixedPos’ => Makes debug toolbar sticky with browser window, not document!
 * ‘collapsed’ => Show debug toolbar minimized by default
 * ‘yamlStyle’ => Show configuration report in Yaml or PHP-array style.
+
+###Turn off debug ouput in any controller 
+
+Code below shows how to disable yii debug toolbar output in any controller. It works only if 'debugToolbarManager' application component configured
+	[...]
+	public function actionAnyController()
+	{
+		if ( Yii::app()->hasComponent('debugToolbarManager') ) 
+			Yii::app()->debugToolbarManager->disableOutput(); // it will disable yiidebugtb output
+		// code
+	} 
+	[...]
+
 
 Also there is an additional security feature you may need - 'allowedIPs' option.
 This option holds the array of IP addresses of all machines you need to use in
